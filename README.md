@@ -1,10 +1,10 @@
 # only-jsx
-Another JSX runtime for VanillaJS without react
+Another JSX runtime for Vanilla JS without react, vue, or something else
 
 ## install and config
 
 ```bash
-npm i --save-dev only-jsx
+npm i only-jsx
 ```
 
 and edit `babel.config.js` or `.babelrc` or other babel config:
@@ -38,7 +38,7 @@ or `tsconfig.json`
 
 then coding js or ts with jsx.
 
-## example
+## examples
 
 ```js
 //index.jsx
