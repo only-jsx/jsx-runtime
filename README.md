@@ -4,7 +4,7 @@ Another JSX runtime for VanillaJS without react
 ## install and config
 
 ```bash
-npm i --save-dev only-jsx
+npm i only-jsx
 ```
 
 and edit `babel.config.js` or `.babelrc` or other babel config:
