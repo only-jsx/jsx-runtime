@@ -38,7 +38,7 @@ or `tsconfig.json`
 
 then coding js or ts with jsx.
 
-## example
+## examples
 
 ```js
 //index.jsx
