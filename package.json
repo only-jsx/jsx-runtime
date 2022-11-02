@@ -1,0 +1,28 @@
+{
+    "name": "only-jsx",
+    "version": "0.0.1-beta.1",
+    "description": "JSX runtime for VanillaJS",
+    "main": "./jsx-runtime/index.js",
+    "types": "./jsx-runtime/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "typescript": "^4.8.4"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/only-jsx/jsx-runtime.git"
+    },
+    "bugs": {
+        "url": "https://github.com/only-jsx/jsx-runtime/issues"
+    },
+    "files": [
+        "README.md",
+        "jsx-runtime/"
+    ],
+    "keywords": ["JSX", "VanillaJS"]
+}

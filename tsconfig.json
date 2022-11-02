@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "outDir": "./jsx-runtime/",
+        "declaration": true,
+        "module": "ESNext",
+        "target": "es5"
+    },
+    "include": ["index.ts"]
+}
