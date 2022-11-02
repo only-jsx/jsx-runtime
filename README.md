@@ -1,5 +1,5 @@
 # only-jsx
-Another JSX runtime for VanillaJS without react
+Another JSX runtime for Vanilla JS without react, vue, or something else
 
 ## install and config
 
