@@ -73,6 +73,7 @@ export default ({props, children}) => {
     const e = <div data-custom={props.b}>
         <span>{props.a + props.b}</span>
         <button onclick={onClick}>Button</button>
+        <div ref={result}></div>
         <div id='counter' style="color: blue;"></div>
         {children}
     </div>;
