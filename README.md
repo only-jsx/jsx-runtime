@@ -40,6 +40,8 @@ then coding js or ts with jsx.
 
 ## examples
 
+This are in repository https://github.com/only-jsx/examples
+
 ```js
 //index.jsx
 import APP from './app';
