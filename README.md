@@ -40,7 +40,7 @@ then coding js or ts with jsx.
 
 ## examples
 
-This are in repository https://github.com/only-jsx/examples
+The source codes are in the repository https://github.com/only-jsx/examples.
 
 ```js
 //index.jsx
