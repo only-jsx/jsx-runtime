@@ -1,15 +1,18 @@
-function renderChildren(fragment, children) {
+function renderChildren(fragment, children, ctx) {
     if (Array.isArray(children) || children instanceof NodeList) {
-        children.forEach(function (c) { return renderChildren(fragment, c); });
+        children.forEach(function (c) { return renderChildren(fragment, c, ctx); });
     }
     else if (children instanceof Node) {
         fragment.appendChild(children);
+    }
+    else if (typeof children === 'function') {
+        renderChildren(fragment, children(ctx), ctx);
     }
     else if (children) {
         fragment.appendChild(document.createTextNode(children.toString()));
     }
 }
-function render(element, options) {
+function render(element, options, ctx) {
     if (options instanceof Object) {
         for (var o in options) {
             switch (o) {
@@ -24,7 +27,7 @@ function render(element, options) {
                 case 'children':
                     {
                         var fragment = document.createDocumentFragment();
-                        renderChildren(fragment, options.children);
+                        renderChildren(fragment, options.children, ctx);
                         element.replaceChildren(fragment);
                     }
                     break;
@@ -46,10 +49,30 @@ function render(element, options) {
     }
     return element;
 }
+var context = null;
 function jsx(tag, options) {
-    return typeof tag === 'function' ? tag(options) : render(document.createElement(tag), options);
+    var f = typeof tag === 'function' ? function (ctx) { return tag(options, ctx); } : function (ctx) { return render(document.createElement(tag), options, ctx); };
+    if (!context) {
+        return f(undefined);
+    }
+    if (context.tag === tag) {
+        var result = f(context.ctx);
+        context = null;
+        return result;
+    }
+    return f;
 }
 function Fragment(options) {
-    return render(document.createDocumentFragment(), options);
+    var f = function (ctx) { return render(document.createDocumentFragment(), options, ctx); };
+    if (!context) {
+        return f(undefined);
+    }
+    return f;
 }
-export { jsx, jsx as jsxs, Fragment, };
+function setContext(tag, ctx) {
+    context = { tag: tag, ctx: ctx };
+}
+function getContext() {
+    return context;
+}
+export { jsx, jsx as jsxs, Fragment, setContext, getContext, };
