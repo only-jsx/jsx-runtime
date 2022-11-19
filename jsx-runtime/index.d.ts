@@ -191,6 +191,8 @@ export declare namespace JSX {
         view: any;
     }
 }
-declare function jsx(tag: keyof JSX.IntrinsicElements | ((o: Options) => HTMLElement | DocumentFragment), options: Options): HTMLElement | DocumentFragment;
-declare function Fragment(options: Options): HTMLElement | DocumentFragment;
-export { jsx, jsx as jsxs, Fragment, };
+declare function jsx(tag: keyof JSX.IntrinsicElements | ((o: Options, ctx: any) => HTMLElement | DocumentFragment), options: Options): HTMLElement | DocumentFragment | ((ctx: any) => HTMLElement | DocumentFragment);
+declare function Fragment(options: Options): HTMLElement | DocumentFragment | ((ctx: any) => HTMLElement | DocumentFragment);
+declare function setContext(tag: any, ctx: any): void;
+declare function getContext(): any;
+export { jsx, jsx as jsxs, Fragment, setContext, getContext, };

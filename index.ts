@@ -198,17 +198,19 @@ export namespace JSX {
     }
 }
 
-function renderChildren(fragment: DocumentFragment, children: JsxNode | JsxNode[] | NodeList) {
+function renderChildren(fragment: DocumentFragment, children: JsxNode | JsxNode[] | NodeList, ctx: any) {
     if (Array.isArray(children) || children instanceof NodeList) {
-        children.forEach(c => renderChildren(fragment, c));
+        children.forEach(c => renderChildren(fragment, c, ctx));
     } else if (children instanceof Node) {
         fragment.appendChild(children);
+    } else if (typeof children === 'function') {
+        renderChildren(fragment, children(ctx), ctx);
     } else if (children) {
         fragment.appendChild(document.createTextNode(children.toString()));
     }
 }
 
-function render(element: HTMLElement | DocumentFragment, options: Options) {
+function render(element: HTMLElement | DocumentFragment, options: Options, ctx: any) {
     if (options instanceof Object) {
         for (const o in options) {
             switch (o) {
@@ -222,7 +224,7 @@ function render(element: HTMLElement | DocumentFragment, options: Options) {
                 case 'children':
                     {
                         const fragment = document.createDocumentFragment();
-                        renderChildren(fragment, options.children);
+                        renderChildren(fragment, options.children, ctx);
                         element.replaceChildren(fragment);
                     }
                     break;
@@ -244,16 +246,47 @@ function render(element: HTMLElement | DocumentFragment, options: Options) {
     return element;
 }
 
-function jsx(tag: keyof JSX.IntrinsicElements | ((o:Options)=>HTMLElement|DocumentFragment), options: Options) {
-    return typeof tag === 'function' ? tag(options) : render(document.createElement(tag), options);
+let context = null;
+
+function jsx(tag: keyof JSX.IntrinsicElements | ((o:Options, ctx: any)=>HTMLElement|DocumentFragment), options: Options) {
+    const f = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => render(document.createElement(tag), options, ctx);
+
+    if (!context) {
+        return f(undefined);
+    }
+
+    if(context.tag===tag)
+    {
+        const result = f(context.ctx);
+        context = null;
+        return result;
+    }
+
+    return f;
 }
 
 function Fragment(options: Options) {
-    return render(document.createDocumentFragment(), options);
+    const f = (ctx: any) => render(document.createDocumentFragment(), options, ctx);
+
+    if (!context) {
+        return f(undefined);
+    }
+
+    return f;
+}
+
+function setContext(tag, ctx) {
+    context = {tag, ctx};
+}
+
+function getContext() {
+    return context;
 }
 
 export {
     jsx,
     jsx as jsxs,
     Fragment,
+    setContext,
+    getContext,
 }
