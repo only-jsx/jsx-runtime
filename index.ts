@@ -1,6 +1,6 @@
 export type JsxNode = Node | NodeList | Function | string | number | DocumentFragment | boolean | null | undefined;
 
-export type JsxRef = { current?: HTMLElement | DocumentFragment };
+export type JsxRef = { current?: HTMLElement | DocumentFragment | Comment };
 
 export type OptionsAttributes = { [key: string]: JsxNode | JsxNode[] | JsxRef };
 
@@ -248,15 +248,14 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
 
 let context = null;
 
-function jsx(tag: keyof JSX.IntrinsicElements | ((o:Options, ctx: any)=>HTMLElement|DocumentFragment), options: Options) {
+function jsx(tag: keyof JSX.IntrinsicElements | ((o: Options, ctx: any) => HTMLElement | DocumentFragment), options: Options) {
     const f = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => render(document.createElement(tag), options, ctx);
 
     if (!context) {
         return f(undefined);
     }
 
-    if(context.tag===tag)
-    {
+    if (context.tag === tag) {
         const result = f(context.ctx);
         context = null;
         return result;
@@ -275,8 +274,22 @@ function Fragment(options: Options) {
     return f;
 }
 
+function Comment(options: Options) {
+    if (options instanceof Object) {
+        const c = document.createComment(options.children?.toString() || '');
+
+        if (options.ref instanceof Object) {
+            options.ref.current = c;
+        }
+
+        return c;
+    }
+
+    return document.createComment('');
+}
+
 function setContext(tag, ctx) {
-    context = {tag, ctx};
+    context = { tag, ctx };
 }
 
 function getContext() {
@@ -287,6 +300,7 @@ export {
     jsx,
     jsx as jsxs,
     Fragment,
+    Comment,
     setContext,
     getContext,
 }
