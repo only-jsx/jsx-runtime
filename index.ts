@@ -248,7 +248,9 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
 
 let context = null;
 
-function jsx(tag: keyof JSX.IntrinsicElements | ((o: Options, ctx: any) => HTMLElement | DocumentFragment), options: Options) {
+export type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment;
+
+function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options) {
     const f = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => render(document.createElement(tag), options, ctx);
 
     if (!context) {
