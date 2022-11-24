@@ -69,10 +69,21 @@ function Fragment(options) {
     }
     return f;
 }
+function Comment(options) {
+    var _a;
+    if (options instanceof Object) {
+        var c = document.createComment(((_a = options.children) === null || _a === void 0 ? void 0 : _a.toString()) || '');
+        if (options.ref instanceof Object) {
+            options.ref.current = c;
+        }
+        return c;
+    }
+    return document.createComment('');
+}
 function setContext(tag, ctx) {
     context = { tag: tag, ctx: ctx };
 }
 function getContext() {
     return context;
 }
-export { jsx, jsx as jsxs, Fragment, setContext, getContext, };
+export { jsx, jsx as jsxs, Fragment, Comment, setContext, getContext, };
