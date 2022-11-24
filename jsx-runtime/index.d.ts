@@ -1,6 +1,6 @@
 export declare type JsxNode = Node | NodeList | Function | string | number | DocumentFragment | boolean | null | undefined;
 export declare type JsxRef = {
-    current?: HTMLElement | DocumentFragment;
+    current?: HTMLElement | DocumentFragment | Comment;
 };
 export declare type OptionsAttributes = {
     [key: string]: JsxNode | JsxNode[] | JsxRef;
@@ -191,8 +191,10 @@ export declare namespace JSX {
         view: any;
     }
 }
-declare function jsx(tag: keyof JSX.IntrinsicElements | ((o: Options, ctx: any) => HTMLElement | DocumentFragment), options: Options): HTMLElement | DocumentFragment | ((ctx: any) => HTMLElement | DocumentFragment);
+export declare type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment;
+declare function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options): HTMLElement | Comment | DocumentFragment | ((ctx: any) => HTMLElement | Comment | DocumentFragment);
 declare function Fragment(options: Options): HTMLElement | DocumentFragment | ((ctx: any) => HTMLElement | DocumentFragment);
+declare function Comment(options: Options): Comment;
 declare function setContext(tag: any, ctx: any): void;
 declare function getContext(): any;
-export { jsx, jsx as jsxs, Fragment, setContext, getContext, };
+export { jsx, jsx as jsxs, Fragment, Comment, setContext, getContext, };
