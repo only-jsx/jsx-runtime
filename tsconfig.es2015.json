@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "outDir": "jsx-runtime.commonjs",
-        "declaration": false,
-        "module": "commonjs",
+        "outDir": "jsx-runtime",
+        "declaration": true,
+        "module": "es2015",
         "target": "es5",
         "moduleResolution": "node",
     },
