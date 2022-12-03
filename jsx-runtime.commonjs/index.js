@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getContext = exports.setContext = exports.Comment = exports.Fragment = exports.jsxs = exports.jsx = void 0;
 function renderChildren(fragment, children, ctx) {
     if (Array.isArray(children) || children instanceof NodeList) {
         children.forEach(function (c) { return renderChildren(fragment, c, ctx); });
@@ -62,6 +65,8 @@ function jsx(tag, options) {
     }
     return f;
 }
+exports.jsx = jsx;
+exports.jsxs = jsx;
 function Fragment(options) {
     var f = function (ctx) { return render(document.createDocumentFragment(), options, ctx); };
     if (!context) {
@@ -69,6 +74,7 @@ function Fragment(options) {
     }
     return f;
 }
+exports.Fragment = Fragment;
 function Comment(options) {
     if (options instanceof Object) {
         var c = document.createComment('' + options.children);
@@ -79,10 +85,12 @@ function Comment(options) {
     }
     return document.createComment('' + options);
 }
+exports.Comment = Comment;
 function setContext(tag, ctx) {
     context = { tag: tag, ctx: ctx };
 }
+exports.setContext = setContext;
 function getContext() {
     return context;
 }
-export { jsx, jsx as jsxs, Fragment, Comment, setContext, getContext, };
+exports.getContext = getContext;
