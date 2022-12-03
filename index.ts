@@ -233,20 +233,20 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
                         if (typeof options[o] === 'function') {
                             (element as any)[o] = options[o];
                         } else {
-                            element.setAttribute(o, options[o].toString());
+                            element.setAttribute(o, '' + options[o]);
                         }
                     }
                     break;
             }
         }
-    } else {
+    } else if (options) {
         element.replaceChildren(document.createTextNode(options.toString()));
     }
 
     return element;
 }
 
-let context = null;
+let context: any | null = null;
 
 export type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment;
 
@@ -278,7 +278,7 @@ function Fragment(options: Options) {
 
 function Comment(options: Options) {
     if (options instanceof Object) {
-        const c = document.createComment(options.children?.toString() || '');
+        const c = document.createComment('' + options.children);
 
         if (options.ref instanceof Object) {
             options.ref.current = c;
@@ -287,7 +287,7 @@ function Comment(options: Options) {
         return c;
     }
 
-    return document.createComment('');
+    return document.createComment('' + options);
 }
 
 function setContext(tag, ctx) {
