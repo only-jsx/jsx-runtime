@@ -3,7 +3,7 @@ export type JsxRef = {
     current?: HTMLElement | DocumentFragment | Comment;
 };
 export type OptionsAttributes = {
-    [key: string]: Function | string | number | boolean | null | undefined;
+    [key: string]: any;
 };
 export type OptionsRef = {
     ref: JsxRef;

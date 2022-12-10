@@ -2,7 +2,7 @@ export type JsxNode = Node | NodeList | Function | string | number | boolean | n
 
 export type JsxRef = { current?: HTMLElement | DocumentFragment | Comment };
 
-export type OptionsAttributes = { [key: string]: Function | string | number | boolean | null | undefined };
+export type OptionsAttributes = { [key: string]: any };
 
 export type OptionsRef = {
     ref: JsxRef;
