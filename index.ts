@@ -1,8 +1,8 @@
-export type JsxNode = Node | NodeList | Function | string | number | DocumentFragment | boolean | null | undefined;
+export type JsxNode = Node | NodeList | Function | string | number | boolean | null | undefined;
 
 export type JsxRef = { current?: HTMLElement | DocumentFragment | Comment };
 
-export type OptionsAttributes = { [key: string]: JsxNode | JsxNode[] | JsxRef };
+export type OptionsAttributes = { [key: string]: Function | string | number | boolean | null | undefined };
 
 export type OptionsRef = {
     ref: JsxRef;
@@ -198,15 +198,15 @@ export namespace JSX {
     }
 }
 
-function renderChildren(fragment: DocumentFragment, children: JsxNode | JsxNode[] | NodeList, ctx: any) {
+function renderChildren(fragment: DocumentFragment, children: JsxNode | JsxNode[], ctx: any) {
     if (Array.isArray(children) || children instanceof NodeList) {
-        children.forEach(c => renderChildren(fragment, c, ctx));
+        children.forEach((c: JsxNode | JsxNode[]) => renderChildren(fragment, c, ctx));
     } else if (children instanceof Node) {
         fragment.appendChild(children);
     } else if (typeof children === 'function') {
         renderChildren(fragment, children(ctx), ctx);
     } else if (children) {
-        fragment.appendChild(document.createTextNode(children.toString()));
+        fragment.appendChild(document.createTextNode('' + children));
     }
 }
 
@@ -248,7 +248,7 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
 
 let context: any | null = null;
 
-export type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment;
+export type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment | null;
 
 function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options) {
     const f = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => render(document.createElement(tag), options, ctx);
@@ -290,8 +290,12 @@ function Comment(options: Options) {
     return document.createComment('' + options);
 }
 
-function setContext(tag, ctx) {
+function setContext(tag: keyof JSX.IntrinsicElements | TagFunc, ctx: any) {
     context = { tag, ctx };
+}
+
+function clearContext() {
+    context = null;
 }
 
 function getContext() {
@@ -304,5 +308,6 @@ export {
     Fragment,
     Comment,
     setContext,
+    clearContext,
     getContext,
 }

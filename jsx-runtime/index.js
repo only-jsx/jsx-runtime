@@ -9,7 +9,7 @@ function renderChildren(fragment, children, ctx) {
         renderChildren(fragment, children(ctx), ctx);
     }
     else if (children) {
-        fragment.appendChild(document.createTextNode(children.toString()));
+        fragment.appendChild(document.createTextNode('' + children));
     }
 }
 function render(element, options, ctx) {
@@ -82,7 +82,10 @@ function Comment(options) {
 function setContext(tag, ctx) {
     context = { tag: tag, ctx: ctx };
 }
+function clearContext() {
+    context = null;
+}
 function getContext() {
     return context;
 }
-export { jsx, jsx as jsxs, Fragment, Comment, setContext, getContext, };
+export { jsx, jsx as jsxs, Fragment, Comment, setContext, clearContext, getContext, };

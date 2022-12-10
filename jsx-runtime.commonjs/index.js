@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getContext = exports.setContext = exports.Comment = exports.Fragment = exports.jsxs = exports.jsx = void 0;
+exports.getContext = exports.clearContext = exports.setContext = exports.Comment = exports.Fragment = exports.jsxs = exports.jsx = void 0;
 function renderChildren(fragment, children, ctx) {
     if (Array.isArray(children) || children instanceof NodeList) {
         children.forEach(function (c) { return renderChildren(fragment, c, ctx); });
@@ -12,7 +12,7 @@ function renderChildren(fragment, children, ctx) {
         renderChildren(fragment, children(ctx), ctx);
     }
     else if (children) {
-        fragment.appendChild(document.createTextNode(children.toString()));
+        fragment.appendChild(document.createTextNode('' + children));
     }
 }
 function render(element, options, ctx) {
@@ -90,6 +90,10 @@ function setContext(tag, ctx) {
     context = { tag: tag, ctx: ctx };
 }
 exports.setContext = setContext;
+function clearContext() {
+    context = null;
+}
+exports.clearContext = clearContext;
 function getContext() {
     return context;
 }
