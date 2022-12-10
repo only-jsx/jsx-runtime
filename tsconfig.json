@@ -4,6 +4,9 @@
         "declaration": false,
         "module": "commonjs",
         "target": "es5",
+        "lib": [
+            "ES5", "DOM"
+        ],
         "moduleResolution": "node",
     },
     "include": ["index.ts"]
