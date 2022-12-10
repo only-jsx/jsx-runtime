@@ -11,7 +11,7 @@ export type OptionsRef = {
 export type OptionsChildren = {
     children: JsxNode | JsxNode[];
 };
-export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef> | string | number | boolean | null | undefined;
+export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef>;
 export declare namespace JSX {
     interface IntrinsicElements {
         a: any;

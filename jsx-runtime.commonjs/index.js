@@ -47,9 +47,6 @@ function render(element, options, ctx) {
             }
         }
     }
-    else if (options) {
-        element.replaceChildren(document.createTextNode(options.toString()));
-    }
     return element;
 }
 var context = null;
