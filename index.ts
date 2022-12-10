@@ -12,7 +12,7 @@ export type OptionsChildren = {
     children: JsxNode | JsxNode[];
 };
 
-export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef> | string | number | boolean | null | undefined;
+export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef>;
 
 export namespace JSX {
     export interface IntrinsicElements {
@@ -239,8 +239,6 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
                     break;
             }
         }
-    } else if (options) {
-        element.replaceChildren(document.createTextNode(options.toString()));
     }
 
     return element;
