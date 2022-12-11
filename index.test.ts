@@ -7,7 +7,6 @@ import {
     clearContext,
     getContext,
     TagFunc,
-    JsxNodeFunc,
     JsxRef,
 } from './index';
 
@@ -99,7 +98,7 @@ describe('Test Runtime', () => {
         expect(r).toStrictEqual({});
 
         r = {};
-        const fc2: JsxNodeFunc = () => jsx('div', { id: 3, ref: r }) as HTMLDivElement;
+        const fc2: TagFunc = () => jsx('div', { id: 3, ref: r }) as HTMLDivElement;
         const r3 = jsx('div', { id: 2, children: fc2 });
         expect(r2 instanceof HTMLDivElement).toBeTruthy();
         const e3 = r3 as HTMLElement;

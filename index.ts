@@ -1,8 +1,6 @@
-export type JsxNode = JsxNodeFunc| Node | NodeList | string | number | boolean | null | undefined;
+export type JsxNode = TagFunc | Node | NodeList | string | number | boolean | null | undefined;
 
-export type JsxNodeFunc = (o: Options) => JsxNode;
-
-export type JsxRef = { current?: HTMLElement | DocumentFragment | Comment };
+export type JsxRef = { current?: Node };
 
 export type OptionsAttributes = { [key: string]: any };
 
@@ -16,7 +14,7 @@ export type OptionsChildren = {
 
 export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef>;
 
-export type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment | null;
+export type TagFunc = (o: Options, ctx?: any) => Node | null;
 
 export namespace JSX {
     export interface IntrinsicElements {

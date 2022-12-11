@@ -1,7 +1,6 @@
-export type JsxNode = JsxNodeFunc | Node | NodeList | string | number | boolean | null | undefined;
-export type JsxNodeFunc = (o: Options) => JsxNode;
+export type JsxNode = TagFunc | Node | NodeList | string | number | boolean | null | undefined;
 export type JsxRef = {
-    current?: HTMLElement | DocumentFragment | Comment;
+    current?: Node;
 };
 export type OptionsAttributes = {
     [key: string]: any;
@@ -13,7 +12,7 @@ export type OptionsChildren = {
     children: JsxNode | JsxNode[];
 };
 export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef>;
-export type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment | null;
+export type TagFunc = (o: Options, ctx?: any) => Node | null;
 export declare namespace JSX {
     interface IntrinsicElements {
         a: any;
@@ -193,7 +192,7 @@ export declare namespace JSX {
         view: any;
     }
 }
-declare function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options): HTMLElement | Comment | DocumentFragment | ((ctx: any) => HTMLElement | Comment | DocumentFragment);
+declare function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options): Node | ((ctx: any) => Node);
 declare function Fragment(options: Options): HTMLElement | DocumentFragment | ((ctx: any) => HTMLElement | DocumentFragment);
 declare function Comment(options: Options): Comment;
 declare function setContext(tag: keyof JSX.IntrinsicElements | TagFunc, ctx: any): void;
