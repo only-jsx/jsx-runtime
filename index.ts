@@ -205,7 +205,7 @@ function renderChildren(fragment: DocumentFragment, children: JsxNode | JsxNode[
         fragment.appendChild(children);
     } else if (typeof children === 'function') {
         renderChildren(fragment, children(ctx), ctx);
-    } else if (children) {
+    } else if (children != null) {
         fragment.appendChild(document.createTextNode('' + children));
     }
 }
