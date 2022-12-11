@@ -7,6 +7,7 @@ import {
     clearContext,
     getContext,
     TagFunc,
+    JsxNodeFunc,
     JsxRef,
 } from './index';
 
@@ -64,6 +65,21 @@ describe('Test Runtime', () => {
         testDivOptions({ id: 3, children: [null, undefined, false, 1, '1', e, c1, f, JsxComment.bind(this, 'comment'), Fragment.bind(this, { children: span2 })] }, '<div id="3">false11<div id="2"><span></span></div><!--comment--><div id="4"></div><!--comment--><span>span</span></div>');
     });
 
+    test('jsx with Nodelist', () => {
+        const parent = document.createElement('ul');
+        for (let i = 0; i < 3; i++) {
+            const li = document.createElement('li');
+            li.id = '' + i;
+            parent.appendChild(li);
+        }
+
+        const r1 = jsx('ul', { id: 4, children: parent.childNodes });
+        expect(r1 instanceof HTMLUListElement).toBeTruthy();
+        const e1 = r1 as HTMLUListElement;
+        expect(e1.outerHTML).toBe('<ul id="4"><li id="0"></li><li id="1"></li><li id="2"></li></ul>');
+        expect(parent.childNodes.length).toBe(0);
+    });
+
     test('jsx with ref', () => {
         let r: JsxRef = {};
         const r1 = jsx('div', { id: 1, children: null, ref: r });
@@ -83,7 +99,7 @@ describe('Test Runtime', () => {
         expect(r).toStrictEqual({});
 
         r = {};
-        const fc2: TagFunc = () => jsx('div', { id: 3, ref: r }) as HTMLDivElement;
+        const fc2: JsxNodeFunc = () => jsx('div', { id: 3, ref: r }) as HTMLDivElement;
         const r3 = jsx('div', { id: 2, children: fc2 });
         expect(r2 instanceof HTMLDivElement).toBeTruthy();
         const e3 = r3 as HTMLElement;
