@@ -1,8 +1,8 @@
-export type JsxNode = Node | NodeList | Function | string | number | boolean | null | undefined;
+export type JsxNode = TagFunc | Node | NodeList | string | number | boolean | null | undefined;
 
-export type JsxRef = { current?: HTMLElement | DocumentFragment | Comment };
+export type JsxRef = { current?: Node };
 
-export type OptionsAttributes = { [key: string]: Function | string | number | boolean | null | undefined };
+export type OptionsAttributes = { [key: string]: any };
 
 export type OptionsRef = {
     ref: JsxRef;
@@ -12,7 +12,9 @@ export type OptionsChildren = {
     children: JsxNode | JsxNode[];
 };
 
-export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef> | string | number | boolean | null | undefined;
+export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef>;
+
+export type TagFunc = (o: Options, ctx?: any) => Node | null;
 
 export namespace JSX {
     export interface IntrinsicElements {
@@ -199,13 +201,15 @@ export namespace JSX {
 }
 
 function renderChildren(fragment: DocumentFragment, children: JsxNode | JsxNode[], ctx: any) {
-    if (Array.isArray(children) || children instanceof NodeList) {
+    if (Array.isArray(children)) {
         children.forEach((c: JsxNode | JsxNode[]) => renderChildren(fragment, c, ctx));
     } else if (children instanceof Node) {
         fragment.appendChild(children);
     } else if (typeof children === 'function') {
         renderChildren(fragment, children(ctx), ctx);
-    } else if (children) {
+    } else if (children instanceof NodeList) {
+        Array.from(children).forEach((c: JsxNode | JsxNode[]) => renderChildren(fragment, c, ctx));
+    } else if (children != null) {
         fragment.appendChild(document.createTextNode('' + children));
     }
 }
@@ -239,16 +243,12 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
                     break;
             }
         }
-    } else if (options) {
-        element.replaceChildren(document.createTextNode(options.toString()));
     }
 
     return element;
 }
 
 let context: any | null = null;
-
-export type TagFunc = (o: Options, ctx: any) => HTMLElement | DocumentFragment | Comment | null;
 
 function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options) {
     const f = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => render(document.createElement(tag), options, ctx);

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getContext = exports.clearContext = exports.setContext = exports.Comment = exports.Fragment = exports.jsxs = exports.jsx = void 0;
 function renderChildren(fragment, children, ctx) {
-    if (Array.isArray(children) || children instanceof NodeList) {
+    if (Array.isArray(children)) {
         children.forEach(function (c) { return renderChildren(fragment, c, ctx); });
     }
     else if (children instanceof Node) {
@@ -11,7 +11,10 @@ function renderChildren(fragment, children, ctx) {
     else if (typeof children === 'function') {
         renderChildren(fragment, children(ctx), ctx);
     }
-    else if (children) {
+    else if (children instanceof NodeList) {
+        Array.from(children).forEach(function (c) { return renderChildren(fragment, c, ctx); });
+    }
+    else if (children != null) {
         fragment.appendChild(document.createTextNode('' + children));
     }
 }
@@ -46,9 +49,6 @@ function render(element, options, ctx) {
                     break;
             }
         }
-    }
-    else if (options) {
-        element.replaceChildren(document.createTextNode(options.toString()));
     }
     return element;
 }
