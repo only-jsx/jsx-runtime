@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "strict": true,
         "outDir": "jsx-runtime.commonjs",
         "declaration": false,
         "module": "commonjs",

@@ -192,7 +192,7 @@ export declare namespace JSX {
         view: any;
     }
 }
-declare function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options): Node | ((ctx: any) => Node);
+declare function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options): Node | ((ctx: any) => Node | null) | null;
 declare function Fragment(options: Options): HTMLElement | DocumentFragment | ((ctx: any) => HTMLElement | DocumentFragment);
 declare function Comment(options: Options): Comment;
 declare function setContext(tag: keyof JSX.IntrinsicElements | TagFunc, ctx: any): void;
