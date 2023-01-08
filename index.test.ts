@@ -8,6 +8,7 @@ import {
     getContext,
     TagFunc,
     JsxRef,
+    Options,
 } from './index';
 
 describe('Test Runtime', () => {
@@ -20,7 +21,7 @@ describe('Test Runtime', () => {
     });
 
     test('jsx children', () => {
-        const testDivOptions = (options, html) => {
+        const testDivOptions = (options: Options, html: string) => {
             let r1 = jsx('div', options);
             expect(r1 instanceof HTMLDivElement).toBeTruthy();
             let e1 = r1 as HTMLElement;
@@ -61,7 +62,7 @@ describe('Test Runtime', () => {
 
         const span2 = document.createElement('span');
         span2.textContent = 'span';
-        testDivOptions({ id: 3, children: [null, undefined, false, 1, '1', e, c1, f, JsxComment.bind(this, 'comment'), Fragment.bind(this, { children: span2 })] }, '<div id="3">false11<div id="2"><span></span></div><!--comment--><div id="4"></div><!--comment--><span>span</span></div>');
+        testDivOptions({ id: 3, children: [null, undefined, false, 1, '1', e, c1, f, JsxComment('comment' as unknown as object), Fragment({ children: span2 })] }, '<div id="3">false11<div id="2"><span></span></div><!--comment--><div id="4"></div><!--comment--><span>span</span></div>');
     });
 
     test('jsx with Nodelist', () => {
