@@ -248,7 +248,7 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
     return element;
 }
 
-let context: any | null = null;
+let context: any = null;
 
 function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options) {
     const f = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => render(document.createElement(tag), options, ctx);
