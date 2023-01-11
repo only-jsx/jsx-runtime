@@ -19,7 +19,7 @@
         "typescript": "^4.8.4"
     },
     "exports": {
-        "./jsx-runtime": "./jsx-runtime.commonjs"
+        "./jsx-runtime": "./jsx-runtime.commonjs/index.js"
     },
     "repository": {
         "type": "git",
