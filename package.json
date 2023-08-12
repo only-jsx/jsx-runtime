@@ -1,6 +1,6 @@
 {
     "name": "only-jsx",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "JSX runtime for Vanilla JS",
     "main": "jsx-runtime/index.js",
     "types": "jsx-runtime/index.d.ts",

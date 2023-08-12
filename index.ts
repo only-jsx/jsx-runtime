@@ -236,7 +236,7 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
                     if (element instanceof HTMLElement) {
                         if (typeof options[o] === 'function') {
                             (element as any)[o] = options[o];
-                        } else {
+                        } else if (options[o] != null) {
                             element.setAttribute(o, '' + options[o]);
                         }
                     }

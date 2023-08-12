@@ -2,7 +2,7 @@
     "compilerOptions": {
         "strict": true,
         "outDir": "jsx-runtime.commonjs",
-        "declaration": false,
+        "declaration": true,
         "module": "commonjs",
         "target": "es5",
         "lib": [

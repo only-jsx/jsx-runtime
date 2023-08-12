@@ -42,7 +42,7 @@ function render(element, options, ctx) {
                         if (typeof options[o] === 'function') {
                             element[o] = options[o];
                         }
-                        else {
+                        else if (options[o] != null) {
                             element.setAttribute(o, '' + options[o]);
                         }
                     }

@@ -125,6 +125,33 @@ describe('Test Runtime', () => {
         expect(onclick).toHaveBeenCalledTimes(1);
     });
 
+    test('jsx with attribute', () => {
+        let r: JsxRef = {};
+        const r1 = jsx('div', { id: 1, children: true, style: 'display: block' });
+        expect(r1 instanceof HTMLDivElement).toBeTruthy();
+        const e1 = r1 as HTMLElement;
+        expect(e1.outerHTML).toBe('<div id="1" style="display: block">true</div>');
+        expect(e1.style.display).toBe('block');
+    });
+
+    test('jsx with null attribute', () => {
+        let r: JsxRef = {};
+        const r1 = jsx('div', { id: 1, children: true, style: null });
+        expect(r1 instanceof HTMLDivElement).toBeTruthy();
+        const e1 = r1 as HTMLElement;
+        expect(e1.outerHTML).toBe('<div id="1">true</div>');
+        expect(e1.style.display).toBe('')
+    });
+
+    test('jsx with undefined attribute', () => {
+        let r: JsxRef = {};
+        const r1 = jsx('div', { id: 1, children: true, style: undefined });
+        expect(r1 instanceof HTMLDivElement).toBeTruthy();
+        const e1 = r1 as HTMLElement;
+        expect(e1.outerHTML).toBe('<div id="1">true</div>');
+        expect(e1.style.display).toBe('')
+    });
+
     test('jsx with context', () => {
         const r1 = jsx('div', { id: 1, children: null });
         expect(r1 instanceof HTMLDivElement).toBeTruthy();
