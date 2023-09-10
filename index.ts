@@ -1,4 +1,4 @@
-export type JsxNode = TagFunc | Node | NodeList | string | number | boolean | null | undefined;
+export type JsxNode = ContextFunc | TagFunc | Node | NodeList | string | number | boolean | null | undefined;
 
 export type JsxRef = { current?: Node };
 
@@ -9,12 +9,14 @@ export type OptionsRef = {
 };
 
 export type OptionsChildren = {
-    children: JsxNode | JsxNode[];
+    children?: JsxNode | JsxNode[];
 };
 
 export type Options = Partial<OptionsAttributes & OptionsChildren & OptionsRef>;
 
 export type TagFunc = (o: Options, ctx?: any) => Node | null;
+
+export type ContextFunc = (ctx?: any) => Node | null;
 
 export namespace JSX {
     export interface IntrinsicElements {
@@ -214,7 +216,7 @@ function renderChildren(fragment: DocumentFragment, children: JsxNode | JsxNode[
     }
 }
 
-function render(element: HTMLElement | DocumentFragment, options: Options, ctx: any) {
+function render(element: Element | DocumentFragment, options: Options, ctx: any) {
     if (options instanceof Object) {
         for (const o in options) {
             switch (o) {
@@ -233,7 +235,7 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
                     }
                     break;
                 default:
-                    if (element instanceof HTMLElement) {
+                    if (element instanceof Element) {
                         if (typeof options[o] === 'function') {
                             (element as any)[o] = options[o];
                         } else if (options[o] != null) {
@@ -248,16 +250,32 @@ function render(element: HTMLElement | DocumentFragment, options: Options, ctx: 
     return element;
 }
 
-let context: any = null;
+let context: { tag: keyof JSX.IntrinsicElements | TagFunc, ctx: any } | null;
 
 function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options) {
-    const f = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => render(document.createElement(tag), options, ctx);
+    const f: ContextFunc = typeof tag === 'function' ? (ctx: any) => tag(options, ctx) : (ctx: any) => {
+
+        if (options.xmlns != null) {
+            if (!ctx) {
+                throw new Error('Declaring a namespace on an element using xmlns: attribute requires context');
+            }
+
+            if (ctx.namespaceURI !== options.xmlns) {
+                ctx = { ...ctx };
+                ctx.namespaceURI = options.xmlns;
+            }
+        }
+
+        const element = ctx?.namespaceURI == null ? document.createElement(tag) : document.createElementNS(ctx.namespaceURI, tag);
+
+        return render(element, options, ctx);
+    };
 
     if (!context) {
         return f(undefined);
     }
 
-    if (context.tag === tag) {
+    if (context.tag === tag && context.ctx) {
         const result = f(context.ctx);
         context = null;
         return result;
@@ -267,7 +285,7 @@ function jsx(tag: keyof JSX.IntrinsicElements | TagFunc, options: Options) {
 }
 
 function Fragment(options: Options) {
-    const f = (ctx: any) => render(document.createDocumentFragment(), options, ctx);
+    const f = (ctx: any) => render(document.createDocumentFragment(), options, ctx) as DocumentFragment;
 
     if (!context) {
         return f(undefined);
@@ -291,6 +309,10 @@ function Comment(options: Options) {
 }
 
 function setContext(tag: keyof JSX.IntrinsicElements | TagFunc, ctx: any) {
+    if (ctx?.namespaceURI != null) {
+        throw new Error('namespaceURI context property is reserved for internal use');
+    }
+
     context = { tag, ctx };
 }
 

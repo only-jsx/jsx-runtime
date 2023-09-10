@@ -9,15 +9,24 @@ import {
     TagFunc,
     JsxRef,
     Options,
+    OptionsChildren,
+    ContextFunc,
 } from './index';
 
 describe('Test Runtime', () => {
+    beforeEach(clearContext);
+
     test('context', () => {
         const ctx = 1;
         setContext('div', ctx);
         expect(getContext()).toStrictEqual({ tag: 'div', ctx: 1 });
         clearContext();
         expect(getContext()).toBeNull();
+    });
+
+    test('wrong context', () => {
+        const ctx = { namespaceURI: '' };
+        expect(() => setContext('div', ctx)).toThrowError('namespaceURI context property is reserved for internal use');
     });
 
     test('jsx children', () => {
@@ -112,8 +121,6 @@ describe('Test Runtime', () => {
 
     test('jsx with event', () => {
         const onclick = jest.fn();
-
-        let r: JsxRef = {};
         const r1 = jsx('div', { id: 1, children: true, onclick });
         expect(r1 instanceof HTMLDivElement).toBeTruthy();
         const e1 = r1 as HTMLElement;
@@ -126,7 +133,6 @@ describe('Test Runtime', () => {
     });
 
     test('jsx with attribute', () => {
-        let r: JsxRef = {};
         const r1 = jsx('div', { id: 1, children: true, style: 'display: block' });
         expect(r1 instanceof HTMLDivElement).toBeTruthy();
         const e1 = r1 as HTMLElement;
@@ -135,7 +141,6 @@ describe('Test Runtime', () => {
     });
 
     test('jsx with null attribute', () => {
-        let r: JsxRef = {};
         const r1 = jsx('div', { id: 1, children: true, style: null });
         expect(r1 instanceof HTMLDivElement).toBeTruthy();
         const e1 = r1 as HTMLElement;
@@ -144,12 +149,79 @@ describe('Test Runtime', () => {
     });
 
     test('jsx with undefined attribute', () => {
-        let r: JsxRef = {};
         const r1 = jsx('div', { id: 1, children: true, style: undefined });
         expect(r1 instanceof HTMLDivElement).toBeTruthy();
         const e1 = r1 as HTMLElement;
         expect(e1.outerHTML).toBe('<div id="1">true</div>');
         expect(e1.style.display).toBe('')
+    });
+
+    test('jsx with namespace', () => {
+        const fc: TagFunc = (o: Options, ctx?: any) => (o.children as Function)(ctx);
+
+        setContext(fc, {});
+        const r1 = jsx(fc, { children: jsx('svg', { id: 1, children: jsx('path', { id: 1, d: 'MZ', fill: 'white' }), xmlns: 'http://www.w3.org/2000/svg' }) });
+
+        expect(r1 instanceof SVGElement).toBeTruthy();
+        const e1 = r1 as SVGElement;
+        expect(e1.outerHTML).toBe('<svg id="1" xmlns="http://www.w3.org/2000/svg"><path id="1" d="MZ" fill="white"></path></svg>');
+        expect(e1.namespaceURI).toBe('http://www.w3.org/2000/svg');
+        expect(e1.firstChild instanceof Element).toBeTruthy();
+        const e2 = e1.firstChild as Element;
+        expect(e2.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    });
+
+    test('jsx with nested namespaces', () => {
+        const fc = (o: OptionsChildren, ctx?: any) => (o.children as ContextFunc)(ctx);
+
+        setContext(fc, {});
+
+        const nested = jsx('h1', { id: 31, children: jsx('h2', { id: 32, children: jsx('h3', {}), xmlns: null }), xmlns: '3' });
+        const nested1 = jsx('h1', { id: 21, children: jsx('h2', { id: 22, children: jsx('h3', { children: nested }), xmlns: null }), xmlns: '' });
+        const nested2 = jsx('h1', { id: 11, children: jsx('h2', { id: 12, children: jsx('h3', { children: nested1 }) }), xmlns: '2' });
+        const r1 = jsx(fc, { children: jsx('h1', { id: 1, children: jsx('h2', { id: 2, children: jsx('h3', { children: nested2 }) }), xmlns: '1' }) });
+
+        expect(r1 instanceof Element).toBeTruthy();
+        const e1 = r1 as Element;
+        expect(e1.outerHTML).toBe('<h1 id="1" xmlns="1"><h2 id="2"><h3><h1 id="11" xmlns="2"><h2 id="12"><h3><h1 id="21" xmlns=""><h2 id="22"><h3><h1 id="31" xmlns="3"><h2 id="32"><h3></h3></h2></h1></h3></h2></h1></h3></h2></h1></h3></h2></h1>');
+        expect(e1.namespaceURI).toBe('1');
+        expect(e1.firstChild instanceof Element).toBeTruthy();
+        const e2 = e1.firstChild as Element;
+        expect(e2.namespaceURI).toBe('1');
+        expect(e2.firstChild instanceof Element).toBeTruthy();
+        const e3 = e2.firstChild as Element;
+        expect(e3.namespaceURI).toBe('1');
+
+        const e11 = e3.firstChild as Element;
+        expect(e11.namespaceURI).toBe('2');
+        expect(e11.firstChild instanceof Element).toBeTruthy();
+        const e12 = e11.firstChild as Element;
+        expect(e12.namespaceURI).toBe('2');
+        expect(e12.firstChild instanceof Element).toBeTruthy();
+        const e13 = e12.firstChild as Element;
+        expect(e13.namespaceURI).toBe('2');
+
+        const e21 = e13.firstChild as Element;
+        expect(e21.namespaceURI).toBeNull();
+        expect(e21.firstChild instanceof Element).toBeTruthy();
+        const e22 = e21.firstChild as Element;
+        expect(e22.namespaceURI).toBeNull();
+        expect(e22.firstChild instanceof Element).toBeTruthy();
+        const e23 = e22.firstChild as Element;
+        expect(e23.namespaceURI).toBeNull();
+
+        const e31 = e23.firstChild as Element;
+        expect(e31.namespaceURI).toBe('3');
+        expect(e31.firstChild instanceof Element).toBeTruthy();
+        const e32 = e31.firstChild as Element;
+        expect(e32.namespaceURI).toBe('3');
+        expect(e32.firstChild instanceof Element).toBeTruthy();
+        const e33 = e32.firstChild as Element;
+        expect(e33.namespaceURI).toBe('3');
+    });
+
+    test('exception without context', () => {
+        expect(() => jsx('svg', { xmlns: '1' })).toThrowError('Declaring a namespace on an element using xmlns: attribute requires context');
     });
 
     test('jsx with context', () => {
@@ -158,21 +230,23 @@ describe('Test Runtime', () => {
         const e1 = r1 as HTMLElement;
         expect(e1.outerHTML).toBe('<div id="1"></div>');
 
-        const fc: TagFunc = () => e1;
+        const fc: TagFunc = (options, ctx) => ((e1.innerHTML = ctx?.content || ''), e1);
 
         const r2 = jsx(fc, { id: 2 });
         expect(r2 instanceof HTMLDivElement).toBeTruthy();
         const e2 = r2 as HTMLElement;
         expect(e2.outerHTML).toBe('<div id="1"></div>');
 
-        setContext('div', undefined);
+        setContext('div', true);
         const r3 = jsx(fc, { id: 3 });
         expect(r3 instanceof Function).toBeTruthy();
-        const rr3 = (r3 as TagFunc)({}, undefined);
+        const rr3 = (r3 as ContextFunc)({ content: 'test' });
+        expect(getContext()).not.toBe(null);
+        clearContext();
+
         expect(rr3 instanceof HTMLDivElement).toBeTruthy();
         const e3 = rr3 as HTMLElement;
-        expect(e3.outerHTML).toBe('<div id="1"></div>');
-        clearContext();
+        expect(e3.outerHTML).toBe('<div id="1">test</div>');
 
         setContext(fc, {});
         const r4 = jsx(fc, { id: 4 });
@@ -180,6 +254,24 @@ describe('Test Runtime', () => {
         const e4 = r4 as HTMLElement;
         expect(e4.outerHTML).toBe('<div id="1"></div>');
         expect(getContext()).toBe(null);
+
+        setContext(fc, { content: 'test' });
+        const r5 = jsx(fc, { id: 5 });
+        expect(r5 instanceof HTMLDivElement).toBeTruthy();
+        expect(getContext()).toBe(null);
+        const e5 = r5 as HTMLElement;
+        expect(e5.outerHTML).toBe('<div id="1">test</div>');
+
+        setContext(fc, undefined);
+        const r6 = jsx(fc, { id: 5 });
+        expect(r6 instanceof Function).toBeTruthy();
+        const rr6 = (r6 as ContextFunc)({ content: 'test' });
+        expect(getContext()).not.toBe(null);
+        clearContext();
+        expect(getContext()).toBe(null);
+        expect(rr6 instanceof HTMLDivElement).toBeTruthy();
+        const e6 = rr3 as HTMLElement;
+        expect(e6.outerHTML).toBe('<div id="1">test</div>');
     });
 
     test('Comment', () => {
@@ -205,9 +297,9 @@ describe('Test Runtime', () => {
         const f2 = Fragment({ children: 'fragment2' });
         expect(f2 instanceof Function).toBeTruthy();
         const rf = (f2 as TagFunc)({}, undefined);
+        clearContext();
 
         expect(rf instanceof DocumentFragment).toBeTruthy();
         expect((rf as DocumentFragment).firstChild?.textContent).toBe('fragment2');
-        clearContext();
     });
 });

@@ -38,11 +38,37 @@ or `tsconfig.json`
 
 then coding js or ts with jsx.
 
+## context
+
+Some JSX elements require context from their parents to be rendered correctly. Examples are children of an SVG element that require a namespaceURI from the parent.
+The setContext method is designed to resolve this issue.
+
+```tsx
+const SvgContext = (props: OptionsChildren, ctx: any) => (props.children as ContextFunc)(ctx);
+
+export default (props: OptionsChildren) => {
+    setContext(SvgContext, {})
+    return <SvgContext><svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'>
+        <path d={props.children}></path>
+    </svg></SvgContext>;
+}
+```
+or even simpler
+
+```jsx
+export default props => {
+    setContext('svg', {})
+    return <svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'>
+        <path d={props.children}></path>
+    </svg>;
+}
+```
+
 ## examples
 
 The source codes are in the repository https://github.com/only-jsx/examples.
 
-```js
+```jsx
 //index.jsx
 import APP from './app';
 
@@ -76,7 +102,7 @@ export default ({props, children}) => {
         <span>{props.a + props.b}</span>
         <button onclick={onClick}>Button</button>
         <div ref={result}></div>
-        <div id='counter' style="color: blue;"></div>
+        <div id='counter' style='color: blue;'></div>
         {children}
     </div>;
 
