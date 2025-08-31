@@ -11,7 +11,13 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getContext = exports.clearContext = exports.setContext = exports.Comment = exports.Fragment = exports.jsxs = exports.jsx = void 0;
+exports.jsx = jsx;
+exports.jsxs = jsx;
+exports.Fragment = Fragment;
+exports.Comment = Comment;
+exports.setContext = setContext;
+exports.clearContext = clearContext;
+exports.getContext = getContext;
 function renderChildren(fragment, children, ctx) {
     if (Array.isArray(children)) {
         children.forEach(function (c) { return renderChildren(fragment, c, ctx); });
@@ -88,8 +94,6 @@ function jsx(tag, options) {
     }
     return f;
 }
-exports.jsx = jsx;
-exports.jsxs = jsx;
 function Fragment(options) {
     var f = function (ctx) { return render(document.createDocumentFragment(), options, ctx); };
     if (!context) {
@@ -97,7 +101,6 @@ function Fragment(options) {
     }
     return f;
 }
-exports.Fragment = Fragment;
 function Comment(options) {
     if (options instanceof Object) {
         var c = document.createComment('' + options.children);
@@ -108,19 +111,15 @@ function Comment(options) {
     }
     return document.createComment('' + options);
 }
-exports.Comment = Comment;
 function setContext(tag, ctx) {
     if ((ctx === null || ctx === void 0 ? void 0 : ctx.namespaceURI) != null) {
         throw new Error('namespaceURI context property is reserved for internal use');
     }
     context = { tag: tag, ctx: ctx };
 }
-exports.setContext = setContext;
 function clearContext() {
     context = null;
 }
-exports.clearContext = clearContext;
 function getContext() {
     return context;
 }
-exports.getContext = getContext;

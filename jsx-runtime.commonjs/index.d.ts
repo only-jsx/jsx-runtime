@@ -199,7 +199,7 @@ declare function Comment(options: Options): Comment;
 declare function setContext(tag: keyof JSX.IntrinsicElements | TagFunc, ctx: any): void;
 declare function clearContext(): void;
 declare function getContext(): {
-    tag: TagFunc | keyof JSX.IntrinsicElements;
+    tag: keyof JSX.IntrinsicElements | TagFunc;
     ctx: any;
 } | null;
 export { jsx, jsx as jsxs, Fragment, Comment, setContext, clearContext, getContext, };

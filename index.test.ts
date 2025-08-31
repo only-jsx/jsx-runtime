@@ -26,7 +26,7 @@ describe('Test Runtime', () => {
 
     test('wrong context', () => {
         const ctx = { namespaceURI: '' };
-        expect(() => setContext('div', ctx)).toThrowError('namespaceURI context property is reserved for internal use');
+        expect(() => setContext('div', ctx)).toThrow('namespaceURI context property is reserved for internal use');
     });
 
     test('jsx children', () => {
@@ -116,7 +116,7 @@ describe('Test Runtime', () => {
         expect((r.current as HTMLElement).outerHTML).toBe('<div id="3"></div>');
 
         const wrongRef = 1 as unknown as JsxRef;
-        expect(() => jsx('div', { id: 1, children: null, ref: wrongRef })).toThrowError('ref property is not instance of Object');
+        expect(() => jsx('div', { id: 1, children: null, ref: wrongRef })).toThrow('ref property is not instance of Object');
     });
 
     test('jsx with event', () => {
@@ -156,6 +156,14 @@ describe('Test Runtime', () => {
         expect(e1.style.display).toBe('')
     });
 
+    test('jsx with non object options', () => {
+        const r1 = jsx('div', 0 as unknown as Options);
+        expect(r1 instanceof HTMLDivElement).toBeTruthy();
+        const e1 = r1 as HTMLElement;
+        expect(e1.outerHTML).toBe('<div></div>');
+        expect(e1.style.display).toBe('')
+    });
+
     test('jsx with namespace', () => {
         const fc: TagFunc = (o: Options, ctx?: any) => (o.children as Function)(ctx);
 
@@ -179,11 +187,11 @@ describe('Test Runtime', () => {
         const nested = jsx('h1', { id: 31, children: jsx('h2', { id: 32, children: jsx('h3', {}), xmlns: null }), xmlns: '3' });
         const nested1 = jsx('h1', { id: 21, children: jsx('h2', { id: 22, children: jsx('h3', { children: nested }), xmlns: null }), xmlns: '' });
         const nested2 = jsx('h1', { id: 11, children: jsx('h2', { id: 12, children: jsx('h3', { children: nested1 }) }), xmlns: '2' });
-        const r1 = jsx(fc, { children: jsx('h1', { id: 1, children: jsx('h2', { id: 2, children: jsx('h3', { children: nested2 }) }), xmlns: '1' }) });
+        const r1 = jsx(fc, { children: jsx('h1', { id: 1, children: jsx('h2', { id: 2, children: jsx('h3', { children: nested2 }), xmlns: '1' }), xmlns: '1' }) });
 
         expect(r1 instanceof Element).toBeTruthy();
         const e1 = r1 as Element;
-        expect(e1.outerHTML).toBe('<h1 id="1" xmlns="1"><h2 id="2"><h3><h1 id="11" xmlns="2"><h2 id="12"><h3><h1 id="21" xmlns=""><h2 id="22"><h3><h1 id="31" xmlns="3"><h2 id="32"><h3></h3></h2></h1></h3></h2></h1></h3></h2></h1></h3></h2></h1>');
+        expect(e1.outerHTML).toBe('<h1 id="1" xmlns="1"><h2 id="2" xmlns="1"><h3><h1 id="11" xmlns="2"><h2 id="12"><h3><h1 id="21" xmlns=""><h2 id="22"><h3><h1 id="31" xmlns="3"><h2 id="32"><h3></h3></h2></h1></h3></h2></h1></h3></h2></h1></h3></h2></h1>');
         expect(e1.namespaceURI).toBe('1');
         expect(e1.firstChild instanceof Element).toBeTruthy();
         const e2 = e1.firstChild as Element;
@@ -221,7 +229,7 @@ describe('Test Runtime', () => {
     });
 
     test('exception without context', () => {
-        expect(() => jsx('svg', { xmlns: '1' })).toThrowError('Declaring a namespace on an element using xmlns: attribute requires context');
+        expect(() => jsx('svg', { xmlns: '1' })).toThrow('Declaring a namespace on an element using xmlns: attribute requires context');
     });
 
     test('jsx with context', () => {
@@ -294,7 +302,7 @@ describe('Test Runtime', () => {
 
         const ctxFunc = () => null;
         setContext(ctxFunc, undefined);
-        const f2 = Fragment({ children: 'fragment2' });
+        const f2 = Fragment({ children: 'fragment2', id: 1 });
         expect(f2 instanceof Function).toBeTruthy();
         const rf = (f2 as TagFunc)({}, undefined);
         clearContext();
